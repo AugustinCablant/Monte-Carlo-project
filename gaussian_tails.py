@@ -75,7 +75,7 @@ def inverse_cas_2(mu, eta, u, p=True):
             def resolve_chandrupatla(k):
                 return (np.exp(-alpha_mu * (k - mu)) - alpha_eta * np.exp(-alpha_eta * (k - eta))) / Z1
             def inverse_func(y):
-                return chandrupatla(lambda x: resolve_chandrupatla(x) - y, -10, 10)
+                return chandrupatla(resolve_chandrupatla(y), -10, 10)
             return inverse_func(U)
         else:
             return mu - np.log(1 - u * (1 - np.exp(-alpha_mu * (eta - mu)))) / alpha_mu
@@ -85,11 +85,11 @@ def inverse_cas_2(mu, eta, u, p=True):
         def resolve_c2(k):
             return (1 - np.exp(- alpha_eta * (k -eta)) - np.exp(-alpha_mu * (eta - mu)) + np.exp(-alpha_mu * (x -mu))) / Z
         def inverse_func2(y):
-            return chandrupatla(lambda x: resolve_c2(x) - y, -10, 10) 
+            return chandrupatla(resolve_c2(y), -10, 10) 
         return inverse_func2(U)
         
 
-def chandrupatla(func, a, b, tol=1e-6, max_iter=100):
+def chandrupatla(func, a, b, tol=1e-6, max_iter=10000):
     """
     Méthode de Chandrupatla pour trouver la racine de la fonction 'func' dans l'intervalle [a, b].
     """

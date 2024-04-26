@@ -1,7 +1,7 @@
 import numpy as np
 
-def thorisson_modifié(p, q, log_p, log_q, C=1.):
-    """Thorisson 
+def thorisson_papier(p, q, log_p, log_q, C=1., n_samples=10000):
+    """Algorithme de couplage de Thorisson
     """
     C = np.clip(C, 0., 1.)
 
@@ -11,24 +11,23 @@ def thorisson_modifié(p, q, log_p, log_q, C=1.):
         return np.minimum(log_w(x), np.log(C))
 
     X = p()
-    log_u = np.log(np.random.uniform())
+    log_u = np.log(np.random.uniform(size=n_samples))
 
-    # P(accept) = phi(X)
+    # P(accepte) = phi(X)
     accepte_X_init = log_u < log_phi(X)
 
-    def cond(carry):
-        accepté, *_ = carry
-        return ~accepté
+    Y = q(size=n_samples)
+    log_v = np.log(np.random.uniform(size=n_samples))
 
-    def corps(carry):
-        *_, i = carry
-        Y = q()
-        log_v = np.log(np.random.uniform())
+    # P(accepte) = 1 - phi(Y)/w(Y)
+    accepte = log_v > log_phi(Y) - log_w(Y)
 
-        # P(accept) = 1 - phi(Y)/w(Y)
-        accepte = log_v > log_phi(Y) - log_w(Y)
-        return accepte, Y, i + 1
+    Z = np.where(accepte, Y, np.nan)
+    est_couplé = accepte_X_init & (Z == X)
 
-    _, Z, n_essais = np.random.while_loop(cond, corps, (accepte_X_init, X, 1))
+    n_essais = np.count_nonzero(~est_couplé)
 
-    return X, Z, accepte_X_init, n_essais
+    # Prendre le premier couplage trouvé
+    Z_couplé = Z[est_couplé][0]
+
+    return X, Z_couplé, est_couplé, n_essais

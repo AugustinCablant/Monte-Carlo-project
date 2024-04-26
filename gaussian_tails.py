@@ -16,6 +16,7 @@ def coupling_gaussian_distributions(mu, eta):
         U = npr.uniform()  #Draw u ∼ U(0, 1)
         alpha_eta = alpha(eta)
         alpha_mu = alpha(mu)
+        gamma = get_gamma(mu,eta)
         def p_hat(x):
             return translated_exp_dist(x, mu, alpha(mu))
         def q_hat(x):
@@ -37,34 +38,19 @@ def coupling_gaussian_distributions(mu, eta):
         return None
 
 ###################### Fonctions aide #######################
-def translated_exp_dist(x, m, l):
-    """  Exponentielle translatée 
-    """
-    if x >= m:
-        return l * np.exp(- l * (x - m))
-    else:
-        return 0
-    
-def alpha(z):
-    """  Fonction Alpha définie pour la fonction 
-        exponentielle translatée
-    """
-    return (z + np.sqrt(z**2 + 4) / 2)
-
-def gamma(mu, eta):
+def get_gamma(mu, eta):
     """  Gamma comme définie dans le papier
     """
     alpha_mu = alpha(mu)
     alpha_eta = alpha(eta)
     return (np.log(alpha_eta) - np.log(alpha_mu) + eta * alpha_eta - mu * alpha_mu) / (alpha_eta - alpha_mu)
 
-
 def inverse_cas_1(mu, eta, u):
     """ Cas 1)a équation 18 page 10
     """
     alpha_mu = alpha(mu)
     alpha_eta = alpha(eta)
-    gamma = gamma(mu, eta)
+    gamma = get_gamma(mu, eta)
     Z = np.exp(-alpha_mu * (eta -mu)) - np.exp(-alpha_mu * (gamma - mu)) + np.exp(-alpha_eta * (gamma - eta))
     Z1 = np.exp(-alpha_mu * (eta -mu)) - np.exp(-alpha_mu * (gamma - mu))
     Z2 = np.exp(-alpha_eta * (gamma - eta))
@@ -79,7 +65,7 @@ def inverse_cas_2(mu, eta, u, p=True):
     """
     alpha_mu = alpha(mu)
     alpha_eta = alpha(eta)
-    gamma = gamma(mu, eta)
+    gamma = get_gamma(mu, eta)
     if p:
         U = npr.uniform()
         Z = 1 - np.exp(-alpha_mu * (eta - mu)) + np.exp(-alpha_mu * (gamma - mu)) - np.exp(-alpha_eta * (gamma -eta))
@@ -126,5 +112,17 @@ def chandrupatla(func, a, b, tol=1e-6, max_iter=100):
         iter_count += 1
     raise ValueError("La méthode de Chandrupatla n'a pas convergé après {} itérations.".format(max_iter))
 
-
+def translated_exp_dist(x, m, l):
+    """  Exponentielle translatée 
+    """
+    if x >= m:
+        return l * np.exp(- l * (x - m))
+    else:
+        return 0
+    
+def alpha(z):
+    """  Fonction Alpha définie pour la fonction 
+        exponentielle translatée
+    """
+    return (z + np.sqrt(z**2 + 4) / 2)
 

@@ -10,13 +10,13 @@ def thorisson_fonction(p, q, log_p, log_q, C=1., n_samples=10000):
     def log_phi(x):
         return np.minimum(log_w(x), np.log(C))
 
-    X = p()
+    X = p.rvs()
     log_u = np.log(np.random.uniform(size=n_samples))
 
     # P(accepte) = phi(X)
     accepte_X_init = log_u < log_phi(X)
 
-    Y = q(size=n_samples)
+    Y = q.rvs(size=n_samples)
     log_v = np.log(np.random.uniform(size=n_samples))
 
     # P(accepte) = 1 - phi(Y)/w(Y)

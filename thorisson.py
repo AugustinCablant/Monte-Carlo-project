@@ -1,6 +1,6 @@
 import numpy as np
 
-def thorisson_papier(p, q, log_p, log_q, C=1., n_samples=10000):
+def thorisson_fonction(p, q, log_p, log_q, C=1., n_samples=10000):
     """Algorithme de couplage de Thorisson
     """
     C = np.clip(C, 0., 1.)

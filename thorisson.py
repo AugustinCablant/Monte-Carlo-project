@@ -28,6 +28,7 @@ def thorisson_fonction(p, q, log_p, log_q, C=1., n_samples=10000):
     n_essais = np.count_nonzero(~est_couplé)
 
     # Prendre le premier couplage trouvé
+    print(Z)
     Z_couplé = Z[est_couplé][0]
 
     return X, Z_couplé, est_couplé, n_essais
